@@ -9,11 +9,13 @@ open group
 open subgroup
 open add_group
 
+-- Let G be a group and S the set of representants of G/mG
 variables {G : Type*} [add_comm_group G]
 
--- Let G be a group and S the set of representants of G/mG
 def fin_quotient (S : set G) [finite S] (m : ℕ):= -- m ≥ 2
   ∀ g : G, ∃ g₀ ∈ S, ∃ h : G, g = g₀ + m•h
+
+variables {S : set G} [finite S]
 
 -- Heights formulated with a general m
 class height (ht : G → ℝ) :=
@@ -25,20 +27,13 @@ class height (ht : G → ℝ) :=
 (lower_bound : ∀ g : G, ht (m•g) ≥ (m^2)*(ht g) + C₂)
 (finite_boxes : ∀ C₃ : ℝ, {g : G | ht g ≤ C₃}.finite)
 
--- Lemma ?
--- Obtenir les C's de cada Q i definir C₂ de l'altura ht ??? 
--- També volem heredar les hipotesis
-
 variables (ht : G → ℝ) [height ht]
-variables {S : set G} [finite S] 
 
 -- let C := max{C₁ Q | Q : S} + C₂
 def C [fintype S] (hS : S.nonempty) (h : fin_quotient S (height.m ht)) : ℝ :=
   ((height.C₁ ht ''S).to_finset.max' (set.nonempty.image (height.C₁ ht) hS)) + height.C₂ ht
 
-
-#check height.C₁ ht 
-
+-- This C has two important properties that combine C₁ and C₂
 lemma useful_C (hS : nonempty S.to_finset) (h : fin_quotient S (height.m ht)) (g₀ : S) (g : G):
 (ht (g - g₀) ≤ ht (2•g) + C)
 :=
@@ -46,14 +41,44 @@ begin
   sorry
 end
 
-#check useful_C
-
 lemma useful_C' (h : fin_quotient S (height.m ht)) (g₀ : S) (g : G) :
-(∀ g : G, ht ((height.m ht)•g) ≥ ((height.m ht)^2)*(ht g) + (height.C₁ ht ''S).to_finset.max + height.C₂ ht)
+(∀ g : G, ht ((height.m ht)•g) ≥ ((height.m ht)^2)*(ht g) + C)
 :=
 begin
   sorry
 end
+
+-- Set of generators: S ∪ {g : G | ht g ≤ C}
+def U : set G :=
+begin
+  exact S ∪ {g : G | ht g ≤ C}
+end
+
+def seq_P (P : G) : ℕ → G :=
+begin
+  sorry,
+
+  -- Idea de la seqüencia:
+  -- seq_P 0 = P
+  -- seq_P succ n := el Q : G tal que seq_P n - Qₐ{iₙ} = mQ
+end
+
+
+lemma elem_with_height_less_C (P : G) :
+∃ Pⱼ : seq_P P, ht Q ≤ C :=
+begin
+  sorry
+
+  -- Idea de la demo:
+  -- Suposem el contrari
+  -- Llavors per les desigualtats veiem que l'altura es va fent petita (altres lemmes?)
+  -- Dir que tots els punts son diferents
+  -- Dir que el conjunt de punts amb altura  ≤ ht P és infinit
+  -- Arribem a contradicció 
+end
+
+
+
 
 -- Descent theorem
 lemma main_theorem (S : set G) [finite S] (m : ℕ) (Hm : m ≥ 2) (h : fin_quotient S m) 
@@ -68,23 +93,12 @@ begin
   -- A partir d'aquí no entenc com funciona...
   -- Donat un P
   -- Definim la seq. {P_j} (amb les seves definicions/hipotesis) 
-  -- Veiem que dins de la seq. hi ha elements d'altura ≤ C
-  -- Escrivim P com a combinació de Qᵢ i algun Pⱼ
+  -- Veiem que dins de la seq. hi ha elements d'altura ≤ C, diem-li Pⱼ
+  -- S'ha d veure que podem escriure P com a combinació de Qᵢ i algun Pⱼ
   -- Ho usem pel Pⱼ que té altura ≤ C
   
-  sorry,
+  sorry
 end
-
-
-
-
-
-
-
-
-
-
-
 
 
 
