@@ -29,7 +29,6 @@ class height (ht : G → ℝ) :=
 -- Obtenir les C's de cada Q i definir C₂ de l'altura ht ??? 
 -- També volem heredar les hipotesis
 
-
 variables (ht : G → ℝ) [height ht]
 variables {S : set G} [finite S] 
 
