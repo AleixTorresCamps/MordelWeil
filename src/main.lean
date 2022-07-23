@@ -30,8 +30,30 @@ class height (ht : G → ℝ) :=
 variables (ht : G → ℝ) [height ht]
 
 -- let C := max{C₁ Q | Q : S} + C₂
+-- def C [fintype S] (hS : S.nonempty) (h : fin_quotient S (height.m ht)) : ℝ :=
+--   ((height.C₁ ht ''S).to_finset.max' (set.nonempty.image (height.C₁ ht) hS)) + height.C₂ ht
 def C [fintype S] (hS : S.nonempty) (h : fin_quotient S (height.m ht)) : ℝ :=
-  ((height.C₁ ht ''S).to_finset.max' (set.nonempty.image (height.C₁ ht) hS)) + height.C₂ ht
+begin
+  let R := height.C₁ ht ''S,
+  have hip : R.finite,
+  exact to_finite R,
+
+  have R_ne : R.to_finset.nonempty,
+  {
+  choose s Hs using hS,
+  use (height.C₁ ht s),
+  simp,
+  use s,
+  split,
+  exact Hs,
+  refl,  
+  },
+
+  exact (R.to_finset.max' R_ne) + height.C₂ ht,
+end
+
+-- finite.set.finite_of_finite_image
+
 
 -- This C has two important properties that combine C₁ and C₂
 lemma useful_C (hS : nonempty S.to_finset) (h : fin_quotient S (height.m ht)) (g₀ : S) (g : G):
@@ -40,6 +62,7 @@ lemma useful_C (hS : nonempty S.to_finset) (h : fin_quotient S (height.m ht)) (g
 begin
   sorry
 end
+
 
 lemma useful_C' (h : fin_quotient S (height.m ht)) (g₀ : S) (g : G) :
 (∀ g : G, ht ((height.m ht)•g) ≥ ((height.m ht)^2)*(ht g) + C)
@@ -54,6 +77,7 @@ begin
   exact S ∪ {g : G | ht g ≤ C}
 end
 
+
 def seq_P (P : G) : ℕ → G :=
 begin
   sorry,
@@ -63,6 +87,9 @@ begin
   -- seq_P succ n := el Q : G tal que seq_P n - Qₐ{iₙ} = mQ
 end
 
+
+-- Falta lemma diferents altures => diferents punts ?
+-- Falten lemmes que reescriuen les desigualtats com s'utilitzen
 
 lemma elem_with_height_less_C (P : G) :
 ∃ Pⱼ : seq_P P, ht Q ≤ C :=
@@ -78,15 +105,13 @@ begin
 end
 
 
-
-
 -- Descent theorem
 lemma main_theorem (S : set G) [finite S] (m : ℕ) (Hm : m ≥ 2) (h : fin_quotient S m) 
 (ht : G → ℝ) [height ht] : 
 fg G :=
 begin
-  fconstructor,
-  fconstructor,
+  rw add_group.fg_iff,
+
   
   -- Usar el lema usefull_C per obtenir la C
   -- Donar el subconjunt generador S ∪ {g : G | ht g ≤ C} (per propietats és finit)
