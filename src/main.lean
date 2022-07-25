@@ -27,9 +27,10 @@ class height (ht : G → ℝ) :=
 (lower_bound : ∀ g : G, ht (m•g) ≥ (m^2)*(ht g) - C₂)
 (finite_boxes : ∀ C₃ : ℝ, {g : G | ht g ≤ C₃}.finite)
 
-variables (ht : G → ℝ) [height ht]
+variables {ht : G → ℝ} [height ht]
 variables (hfinquot : fin_quotient S (height.m ht))
 
+-- Needed lemma to define C
 lemma Rnonempty [fintype S] (hS : S.nonempty) {f : G → ℝ}: (f '' S).to_finset.nonempty :=
 begin
 obtain ⟨x, hx⟩ := hS,
@@ -45,7 +46,7 @@ def C [fintype S] (hS : S.nonempty) (h : fin_quotient S (height.m ht)) : ℝ :=
 
 -- If P∈S, then C₁ P ≤ C
 lemma C₁S_le_C [fintype S] (hS : S.nonempty) (h : fin_quotient S (height.m ht))
-(P : G) (hP : P ∈ S) : (height.C₁ ht P) ≤ (C ht hS h) :=
+(P : G) (hP : P ∈ S) : (height.C₁ ht P) ≤ (C hS h) :=
 begin
   calc 
   (height.C₁ ht P) ≤ (height.C₁ ht '' S).to_finset.max' (Rnonempty hS) : by {
@@ -69,20 +70,20 @@ end
 
 -- This C has two important properties that combine C₁ and C₂
 lemma useful_C [fintype S] (hS : S.nonempty) (h : fin_quotient S (height.m ht)) (g g₀ : G) (hg₀ : g₀ ∈ S) :
-(ht (g - g₀) ≤ 2*(ht g) + (C ht hS h))
+(ht (g - g₀) ≤ 2*(ht g) + (C hS h))
 :=
 begin
-  -- calc 
-  -- ht (g - g₀) ≤ 2*(ht g) + height.C₁ ht g₀ : by {
-  --   have H := (ht.upper_bound),
-  --   sorry
-  -- }
-  -- ... ≤ 2*(ht g) + (C ht hS h) : by linarith [C₁S_le_C ht hS h g₀ hg₀],
-  sorry
+  calc 
+  ht (g - g₀) ≤ 2*(ht g) + height.C₁ ht g₀ : by {
+    -- have H := (height.upper_bound g g₀),
+    sorry
+  }
+  ... ≤ 2*(ht g) + (C hS h) : by linarith [C₁S_le_C hS h g₀ hg₀],
+  
 end
 
 lemma useful_C' [fintype S] (hS : S.nonempty) (h : fin_quotient S (height.m ht)) (g₀ : S) (g : G) :
-(∀ g : G, ht ((height.m ht)•g) ≥ ((height.m ht)^2)*(ht g) + (C ht hS h))
+(∀ g : G, ht ((height.m ht)•g) ≥ ((height.m ht)^2)*(ht g) + (C hS h))
 :=
 begin
   sorry
@@ -91,7 +92,7 @@ end
 -- Set of generators: S ∪ {g : G | ht g ≤ C}
 def U [fintype S] (hS : S.nonempty) (h : fin_quotient S (height.m ht)) : set G :=
 begin
-  exact S ∪ {g : G | ht g ≤ (C ht hS h)},
+  exact S ∪ {g : G | ht g ≤ (C hS h)},
 end
 
 
@@ -109,7 +110,7 @@ def seq_P (P : G) [fintype S] (hS : S.nonempty) (h : fin_quotient S (height.m ht
 
 lemma elem_with_height_less_C [fintype S] (hS : S.nonempty) (h : fin_quotient S (height.m ht)) (P : G) 
 (seq : ℕ → G) :
-∃ (Pᵢ : G), ∃ (n : ℕ), (seq_P ht P hS h) n = Pᵢ ∧ ht Pᵢ ≤ (C ht hS h) :=
+∃ (Pᵢ : G), ∃ (n : ℕ), (seq_P P hS h) n = Pᵢ ∧ ht Pᵢ ≤ (C hS h) :=
 begin
   sorry
 
@@ -127,10 +128,10 @@ lemma main_theorem (S : set G) [finite S] (m : ℕ) (Hm : m ≥ 2) (h : fin_quot
 (ht : G → ℝ) [height ht] : 
 fg G :=
 begin
-  rw add_group.fg_iff,
+  -- rw add_group.fg_iff,
 
-  use S,
-  split,
+  -- use S,
+  -- split,
 
 
   
@@ -144,6 +145,7 @@ begin
   -- Veiem que dins de la seq. hi ha elements d'altura ≤ C, diem-li Pⱼ
   -- S'ha d veure que podem escriure P com a combinació de Qᵢ i algun Pⱼ
   -- Ho usem pel Pⱼ que té altura ≤ C
+  
   
   sorry
 end
