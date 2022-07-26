@@ -81,11 +81,14 @@ begin
     by linarith [ht.C₂_pos],
 end
 
+-- C₂ ≤ C
 lemma C₂_le_C {S : set G} (hS_fin : finite S) (ht : height G)
 [fintype S] (hS : S.nonempty) (h : fin_quotient G S (height.m ht)) :
     (ht.C₂) ≤ (C G hS_fin ht hS h) :=
 begin
-   sorry
+  calc 
+  (ht.C₂) ≤ (finset.max' ((λ s, ht.C₁ (-s)) '' S).to_finset (Rnonempty G hS_fin hS)) + (ht.C₂) :
+    by linarith [max_pos_is_pos G hS_fin ht hS h],
 end
 
 
@@ -112,8 +115,8 @@ begin
   intro g,
   calc
   ht.hfun (ht.m•g) ≥ ((ht.m)^2)*(ht.hfun g) - ht.C₂    : ht.lower_bound g 
-  ... ≥ ((ht.m)^2)*(ht.hfun g) - max 0 ht.C₂           : by simp
-  ... ≥ ((ht.m)^2)*(ht.hfun g) - (C G hS_fin ht hS h)) : by linarith 
+  ... ≥ ((ht.m)^2)*(ht.hfun g) - ht.C₂                 : by simp
+  ... ≥ ((ht.m)^2)*(ht.hfun g) - (C G hS_fin ht hS h)  : by linarith [C₂_le_C G hS_fin ht hS h],
 end
 
 -- Set of generators: S ∪ {g : G | ht g ≤ C}
