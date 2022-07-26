@@ -21,10 +21,10 @@ def fin_quotient (S : set G) [finite S] (m : ℕ) := -- m ≥ 2
 structure height :=
 -- (nonneg : ∀ g : G, 0 ≤ ht g)
 (hfun : G → ℝ)
-(C₁ : G → ℝ)
+(C₁ : G → ℝ) (C₁_pos : ∀ g : G, 0 ≤ C₁ g)
 (upper_bound : ∀ g₀ : G, ∀ g : G, hfun(g + g₀) ≤ 2*hfun g  + C₁ g₀)
 (m : ℕ) (Hm : m ≥ 2)
-(C₂ : ℝ)
+(C₂ : ℝ) (C₂_pos : 0 ≤ C₂)
 (lower_bound : ∀ g : G, hfun (m•g) ≥ (m^2)*(hfun g) - C₂)
 (finite_boxes : ∀ C₃ : ℝ, {g : G | hfun g ≤ C₃}.finite)
 
@@ -40,12 +40,30 @@ use f x,
 finish,
 end
 
--- let C := max{C₁ Q | Q : S} + max 0 C₂
+-- let C := max{C₁ Q | Q : S} + C₂
 def C {S : set G} (hS_fin : finite S) (ht : height G)
 [fintype S] (hS : S.nonempty) (h : fin_quotient G S (ht.m)) : ℝ :=
-  (finset.max' ((λ s, ht.C₁ (-s)) '' S).to_finset (Rnonempty G hS_fin hS)) + max 0 (ht.C₂)
+  (finset.max' ((λ s, ht.C₁ (-s)) '' S).to_finset (Rnonempty G hS_fin hS)) + (ht.C₂)
 
 -- variable {Cₛ : ℝ} [(C ht S.hs_ne h) Cₛ]   
+
+-- 0 ≤ max{C₁ Q | Q : S}
+lemma max_pos_is_pos  {S : set G} (hS_fin : finite S) (ht : height G)
+[fintype S] (hS : S.nonempty) (h : fin_quotient G S (ht.m)) :
+  (0 : ℝ) ≤ (finset.max' ((λ s, ht.C₁ (-s)) '' S).to_finset (Rnonempty G hS_fin hS)) :=
+begin
+    let hS' := hS,
+    obtain ⟨x, hx⟩ := hS,
+    
+    calc
+    (finset.max' ((λ s, ht.C₁ (-s)) '' S).to_finset (Rnonempty G hS_fin hS')) ≥ ht.C₁ (-x) : by {
+      apply finset.le_max',
+      simp,
+      use x,
+      tauto,
+    }
+    ... ≥ 0 : ht.C₁_pos (-x),   
+end
 
 -- If s∈S, then C₁ -s ≤ C
 lemma C₁S_le_C {S : set G} (hS_fin : finite S) (ht : height G)
@@ -59,20 +77,21 @@ begin
     use s,
     tauto,
   }
-  ... ≤ (finset.max' ((λ s, ht.C₁ (-s)) '' S).to_finset (Rnonempty G hS_fin hS)) + max 0 (height.C₂ ht) : by {
-    have H : 0 ≤ max 0 (height.C₂ ht), by simp,
-    linarith,
-  }
+  ... ≤ (finset.max' ((λ s, ht.C₁ (-s)) '' S).to_finset (Rnonempty G hS_fin hS)) + (ht.C₂) : 
+    by linarith [ht.C₂_pos],
 end
 
--- lemma C₂_le_C [fintype S] (hS : S.nonempty) (h : fin_quotient S (height.m ht)) :
---   (height.C₂ ht) ≤ (C ht hS h) :=
--- begin
---   sorry
--- end
+lemma C₂_le_C {S : set G} (hS_fin : finite S) (ht : height G)
+[fintype S] (hS : S.nonempty) (h : fin_quotient G S (height.m ht)) :
+    (ht.C₂) ≤ (C G hS_fin ht hS h) :=
+begin
+   sorry
+end
 
 
 -- This C has two important properties that combine C₁ and C₂
+
+-- C₁
 lemma useful_C {S : set G} (hS_fin : finite S) (ht : height G)
 [fintype S] (hS : S.nonempty) (h : fin_quotient G S ht.m) (g g₀ : G) (hg₀ : g₀ ∈ S) :
 (ht.hfun (g - g₀) ≤ 2*(ht.hfun g) + (C G hS_fin ht hS h))
@@ -84,12 +103,17 @@ begin
   ... ≤ 2*(ht.hfun g) + (C G hS_fin ht hS h) : by linarith [C₁S_le_C G hS_fin ht hS h g₀ hg₀],
 end
 
+-- C₂
 lemma useful_C' {S : set G} (hS_fin : finite S) (ht : height G)
 [fintype S] (hS : S.nonempty) (h : fin_quotient G S ht.m) (g₀ : S) (g : G) :
-(∀ g : G, ht.hfun (ht.m•g) ≥ ((ht.m)^2)*(ht.hfun g) + (C G hS_fin ht hS h))
+(∀ g : G, ht.hfun (ht.m•g) ≥ ((ht.m)^2)*(ht.hfun g) - (C G hS_fin ht hS h))
 :=
 begin
-  sorry
+  intro g,
+  calc
+  ht.hfun (ht.m•g) ≥ ((ht.m)^2)*(ht.hfun g) - ht.C₂    : ht.lower_bound g 
+  ... ≥ ((ht.m)^2)*(ht.hfun g) - max 0 ht.C₂           : by simp
+  ... ≥ ((ht.m)^2)*(ht.hfun g) - (C G hS_fin ht hS h)) : by linarith 
 end
 
 -- Set of generators: S ∪ {g : G | ht g ≤ C}
