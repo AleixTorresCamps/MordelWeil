@@ -47,7 +47,7 @@ def C {S : set G} (hS_fin : finite S) (ht : height G)
 
 -- variable {Cₛ : ℝ} [(C ht S.hs_ne h) Cₛ]   
 
--- If x ∈ S, C₁ -x ≤  max{C₁ -Q | Q : S}
+-- If x ∈ S, C₁ -x ≤ max{C₁ -Q | Q : S}
 lemma C₁_x_le_max_C1 {S : set G} (hS_fin : finite S) (ht : height G)
 [fintype S] (hS : S.nonempty) (h : fin_quotient G S (ht.m)) (x : G) (hx: x ∈ S):
    ht.C₁ (-x) ≤ (finset.max' ((λ s, ht.C₁ (-s)) '' S).to_finset (Rnonempty G hS_fin hS)) :=
@@ -152,6 +152,8 @@ def U {S : set G} (hS_fin : finite S) (ht : height G)
   S ∪ {g : G | ht.hfun g ≤ (C G hS_fin ht hS h)}
 
 
+
+
 def func {S : set G} (hS_fin : finite S) (ht : height G) 
 [fintype S] (hS : S.nonempty) (h : fin_quotient G S ht.m) : G → G :=
 begin
@@ -160,6 +162,17 @@ begin
   choose s Hs g H using h,
   exact g,
 end
+
+-- def test {S : set G} (hS_fin : finite S) (ht : height G)
+-- (P : G) [fintype S] (hS : S.nonempty) (h : fin_quotient G S ht.m) :
+--     false :=
+-- begin
+--   let Q := (func G hS_fin ht hS h) (P),
+
+
+
+--   sorry
+-- end
 
   -- Idea de la seqüencia:
   -- seq_P 0 = P
