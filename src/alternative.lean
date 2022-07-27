@@ -141,7 +141,7 @@ end
 -- Reorder of the terms
 lemma useful_C_2' {S : set G} (hS_fin : finite S) (ht : height G)
 [fintype S] (hS : S.nonempty) (h : fin_quotient G S ht.m) (g : G) :
-  (((ht.m)^2 : ℝ)*(ht.hfun g) ≤ ht.hfun (ht.m•g) + (C G hS_fin ht hS h) ) :=
+    (((ht.m)^2 : ℝ)*(ht.hfun g) ≤ ht.hfun (ht.m•g) + (C G hS_fin ht hS h) ) :=
 begin
   linarith [useful_C_2 G hS_fin ht hS h g],
 end
@@ -150,8 +150,6 @@ end
 def U {S : set G} (hS_fin : finite S) (ht : height G)
 [fintype S] (hS : S.nonempty) (h : fin_quotient G S (height.m ht)) : set G :=
   S ∪ {g : G | ht.hfun g ≤ (C G hS_fin ht hS h)}
-
-
 
 
 def func {S : set G} (hS_fin : finite S) (ht : height G) 
@@ -163,13 +161,35 @@ begin
   exact g,
 end
 
+lemma fin_quot_property {S : set G} (hS_fin : finite S) (ht : height G) 
+[fintype S] (hS : S.nonempty) (h : fin_quotient G S ht.m) (P : G) :
+  ∃ (s g : G), s ∈ S ∧ ht.m • g = P - s :=
+begin
+  specialize h P,
+  obtain ⟨s, Hs, g, H⟩ := h,
+  use s,
+  use g,
+  finish,
+end
+
+lemma P_inequality {S : set G} (hS_fin : finite S) (ht : height G) 
+[fintype S] (hS : S.nonempty) (h : fin_quotient G S ht.m) (P : G): 
+  ∃ (g : G), ((ht.m)^2 : ℝ)*ht.hfun g ≤ 2*ht.hfun (P) + (C G hS_fin ht hS h) :=
+begin
+  have H := fin_quot_property G hS_fin ht hS h P,
+  rcases H with ⟨s, g, Hsg⟩,
+  use g,
+  calc
+  ((ht.m)^2 : ℝ)*(ht.hfun g) ≤ ht.hfun (ht.m•g) + ht.C₂  : by linarith [ht.lower_bound g]
+  ... = ht.hfun (P - s) + ht.C₂                          : by rw Hsg.2
+  ... ≤ 2*ht.hfun (P) + (C G hS_fin ht hS h)             : useful_C_1' G hS_fin ht hS h P s Hsg.1,
+end
+
 -- def test {S : set G} (hS_fin : finite S) (ht : height G)
 -- (P : G) [fintype S] (hS : S.nonempty) (h : fin_quotient G S ht.m) :
 --     false :=
 -- begin
 --   let Q := (func G hS_fin ht hS h) (P),
-
-
 
 --   sorry
 -- end
