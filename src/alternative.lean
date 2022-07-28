@@ -197,7 +197,7 @@ end
   -- Idea de la seqüencia:
   -- seq_P 0 = P
   -- seq_P succ n := el Q : G tal que seq_P n - Qₐ{iₙ} = mQ
-def seq_P {S : set G} (hS_fin : finite S) (ht : height G)
+noncomputable def seq_P {S : set G} (hS_fin : finite S) (ht : height G)
 (P : G) [fintype S] (hS : S.nonempty) (h : fin_quotient G S ht.m) : ℕ → G 
 | 0 := P
 | (n+1) := (func G hS_fin ht hS h) (seq_P n)
