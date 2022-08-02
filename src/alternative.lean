@@ -189,15 +189,6 @@ begin
   ... ≤ 2*ht.hfun (P) + (C G ht hS h)                    : useful_C_1' G ht hS h P s Hsg.1,
 end
 
--- def test {S : set G} (hS_fin : finite S) (ht : height G)
--- (P : G) [fintype S] (hS : S.nonempty) (h : fin_quotient G S ht.m) :
---     false :=
--- begin
---   let Q := (func G hS_fin ht hS h) (P),
-
---   sorry
--- end
-
 -- Idea de la seqüencia:
 -- seq_P 0 = P
 -- seq_P succ n := el Q : G tal que seq_P n - Qₐ{iₙ} = mQ
@@ -208,10 +199,33 @@ noncomputable def seq_P {S : set G} [fintype S] (ht : height G)
 
 -- Falta lemma diferents altures => diferents punts ?
 
+lemma Pᵢ_property {S : set G} [fintype S] (ht : height G) 
+  (hS : S.nonempty) (h : fin_quotient G S ht.m) (P : G):
+  ∀ (n : ℕ), ht.m • ((seq_P G ht P hS h) (n+1)) = P - ((seq_P G ht P hS h) n) :=
+
+begin
+  sorry
+end
+
+lemma Pᵢ_inequality {S : set G} [fintype S] (ht : height G) 
+  (hS : S.nonempty) (h : fin_quotient G S ht.m) (P : G):
+  ∀ (n : ℕ), ((ht.m)^2 : ℝ)*ht.hfun ((seq_P G ht P hS h) (n+1)) ≤ 2*ht.hfun ((seq_P G ht P hS h) n) + (C G ht hS h) :=
+begin
+  intro n,
+  
+  sorry
+end
+
+-- lemma set_Pᵢ_w_n_elem_ht_le_C {S : set G} [fintype S] (ht : height G)
+--   (hS : S.nonempty) (h : fin_quotient G S (height.m ht)) (P : G) 
+
 lemma elem_with_height_less_C {S : set G} [fintype S] (ht : height G)
   (hS : S.nonempty) (h : fin_quotient G S (height.m ht)) (P : G) :
-  ∃ (Pᵢ : G), ∃ (n : ℕ), (seq_P G ht P hS h) n = Pᵢ ∧ ht.hfun Pᵢ ≤ (C G ht hS h) :=
+  ∃ (n : ℕ), ht.hfun ((seq_P G ht P hS h) n) ≤ (C G ht hS h) :=
 begin
+  by_contradiction HC,
+  push_neg at HC,
+
   sorry
 
   -- Idea de la demo:
