@@ -200,8 +200,8 @@ noncomputable def seq_P {S : set G} [fintype S] (ht : height G)
 -- Falta lemma diferents altures => diferents punts ?
 
 lemma Pᵢ_property {S : set G} [fintype S] (ht : height G) 
-  (hS : S.nonempty) (h : fin_quotient G S ht.m) (P : G):
-  ∀ (n : ℕ), ht.m • ((seq_P G ht P hS h) (n+1)) = P - ((seq_P G ht P hS h) n) :=
+  (hS : S.nonempty) (h : fin_quotient G S ht.m) (P : G) (n : ℕ):
+  ∃ (s : S), ht.m • ((seq_P G ht P hS h) (n+1)) = ((seq_P G ht P hS h) n) - s:=
 
 begin
   sorry
