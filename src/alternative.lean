@@ -14,7 +14,7 @@ open function
 variables (G : Type*) [add_comm_group G]
 
 def fin_quotient (S : set G) [fintype S] (m : ℕ) := -- m ≥ 2
-  ∀ g₀ : G, ∃ s ∈ S, ∃ g : G, g₀ = s + m•g
+  ∀ g₀ : G, ∃ g : G, g₀ - m•g ∈ S
 
 open_locale big_operators
 def finite_set_generates (S : set G) [fintype S] :=
@@ -158,20 +158,19 @@ def U {S : set G} [fintype S] (ht : height G)
 
 def func {S : set G} [fintype S] (ht : height G) 
   (hS : S.nonempty) (h : fin_quotient G S ht.m) : G → G :=
-begin
-  intro g₀,
-  specialize h g₀,
-  choose s Hs g H using h,
-  exact g,
-end
+  λ g₀, Exists.some (h g₀)
+
+lemma func_spec {S : set G} [fintype S] (ht : height G) 
+  (hS : S.nonempty) (h : fin_quotient G S ht.m) (g₀ : G) :
+  g₀ - ht.m • (func _ ht hS h g₀) ∈ S := Exists.some_spec (h g₀)
 
 lemma fin_quot_property {S : set G} [fintype S] (ht : height G) 
   (hS : S.nonempty) (h : fin_quotient G S ht.m) (P : G) :
   ∃ (s g : G), s ∈ S ∧ ht.m • g = P - s :=
 begin
   specialize h P,
-  obtain ⟨s, Hs, g, H⟩ := h,
-  use s,
+  obtain ⟨g, H⟩ := h,
+  use P - ht.m • g,
   use g,
   finish,
 end
@@ -204,21 +203,22 @@ lemma Pᵢ_property {S : set G} [fintype S] (ht : height G)
   ∃ (s : S), ht.m • ((seq_P G ht P hS h) (n+1)) = ((seq_P G ht P hS h) n) - s:=
 
 begin
-  sorry
+  unfold seq_P,
+  generalize hh : seq_P G ht P hS h n = Q,
+  use Q - ht.m • func G ht hS h Q,
+  exact func_spec _ ht hS h Q,
+  simp,
 end
 
 lemma Pᵢ_inequality {S : set G} [fintype S] (ht : height G) 
-  (hS : S.nonempty) (h : fin_quotient G S ht.m) (P : G):
-  ∀ (n : ℕ), ((ht.m)^2 : ℝ)*ht.hfun ((seq_P G ht P hS h) (n+1)) ≤ 2*ht.hfun ((seq_P G ht P hS h) n) + (C G ht hS h) :=
+  (hS : S.nonempty) (h : fin_quotient G S ht.m) (P : G) (n : ℕ):
+  ((ht.m)^2 : ℝ)*ht.hfun ((seq_P G ht P hS h) (n+1)) ≤ 2*ht.hfun ((seq_P G ht P hS h) n) + (C G ht hS h) :=
 begin
-  intro n,
-  
   sorry
 end
 
 -- lemma set_Pᵢ_w_n_elem_ht_le_C {S : set G} [fintype S] (ht : height G)
 --   (hS : S.nonempty) (h : fin_quotient G S (height.m ht)) (P : G) 
-
 lemma elem_with_height_less_C {S : set G} [fintype S] (ht : height G)
   (hS : S.nonempty) (h : fin_quotient G S (height.m ht)) (P : G) :
   ∃ (n : ℕ), ht.hfun ((seq_P G ht P hS h) n) ≤ (C G ht hS h) :=
