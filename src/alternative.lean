@@ -214,7 +214,13 @@ lemma Pᵢ_inequality {S : set G} [fintype S] (ht : height G)
   (hS : S.nonempty) (h : fin_quotient G S ht.m) (P : G) (n : ℕ):
   ((ht.m)^2 : ℝ)*ht.hfun ((seq_P G ht P hS h) (n+1)) ≤ 2*ht.hfun ((seq_P G ht P hS h) n) + (C G ht hS h) :=
 begin
-  sorry
+  obtain ⟨s, H⟩ := Pᵢ_property G ht hS h P n,
+
+  calc
+  ((ht.m)^2 : ℝ)*(ht.hfun ((seq_P G ht P hS h) (n+1))) ≤ ht.hfun (ht.m•((seq_P G ht P hS h) (n+1))) + ht.C₂  : by linarith [ht.lower_bound ((seq_P G ht P hS h) (n+1))]
+  ... = ht.hfun (((seq_P G ht P hS h) n) - s) + ht.C₂  : by rw H
+  ... ≤ 2*ht.hfun ((seq_P G ht P hS h) n) + (C G ht hS h)  : useful_C_1' G ht hS h ((seq_P G ht P hS h) n) s _,simp,
+
 end
 
 -- lemma set_Pᵢ_w_n_elem_ht_le_C {S : set G} [fintype S] (ht : height G)
